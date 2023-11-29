@@ -31,12 +31,9 @@ fn random_music_order(files:Vec<PathBuf>) -> Vec<PathBuf> {
     let mut rng = rand::thread_rng();
     let mut shuffled_files:Vec<PathBuf> = files.clone();
     shuffled_files.shuffle(&mut rng);
-
-
     return shuffled_files;
-
-
 }
+
 
 fn main() {
     // Find all the files in the directory to play
@@ -48,9 +45,12 @@ fn main() {
     let (_stream, stream_handle) = OutputStream::try_default().unwrap();
     let sink = Sink::try_new(&stream_handle).unwrap();
 
-    for e in files{
+
+    let mut i: usize = 0;
+    let music_size:usize = files.len();
+    while i < music_size{
         if let Ok(current_dir) = env::current_dir() {
-            let path: PathBuf = current_dir.join(e);
+            let path: PathBuf = current_dir.join(&files[i]);
             let file_open = File::open(path);
 
             // Load a sound from a file, using a path relative to Cargo.toml
@@ -61,18 +61,11 @@ fn main() {
 
             sink.append(source);
 
-            // Sleep for 2 seconds
-            thread::sleep(Duration::from_secs(2));
-            sink.skip_one()
 
         } else {
             eprintln!("Failed to get the current working directory");
         }
-
     }
-
-
-
 
 
     // The sound plays in a separate audio thread,
