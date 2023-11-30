@@ -1,11 +1,16 @@
 use std::fs::File;
-use std::io::BufReader;
+use std::io::{BufReader, stdout};
+use std::io;
 use std::{fs, thread};
 use std::time::Duration;
 use rodio::{Decoder, OutputStream, Sink};
 use std::env;
 use std::path::{Path, PathBuf};
 use rand::seq::SliceRandom;
+use crossterm::event::{Event, KeyCode, KeyEvent, KeyModifiers,read};
+use crossterm::event::KeyEventKind;
+
+use crossterm::execute;
 
 fn scan_directory(directory_path: &Path) -> Vec<PathBuf> {
     let mut data:Vec<_> = fs::read_dir(directory_path)
@@ -34,6 +39,19 @@ fn random_music_order(files:Vec<PathBuf>) -> Vec<PathBuf> {
     return shuffled_files;
 }
 
+
+fn key_dection_system(){
+    match crossterm::event::read().unwrap()
+    {
+        Event::Key(KeyEvent
+                   {
+                       code: KeyCode::Char('h'),
+                       kind : KeyEventKind::Press,
+                       modifiers: KeyModifiers::CONTROL, ..
+                   }) => execute!(stdout, print!("Hello world!")).unwrap(),
+        _ => {}
+    }
+}
 
 fn main() {
     // Find all the files in the directory to play
